@@ -1,11 +1,14 @@
 \documentclass[UTF8]{article}
-\usepackage{ctex}
+
+\usepackage{xeCJK}
+\usepackage[UTF8]{ctex}
 \usepackage{notes2bib}
 \usepackage{fontenc}
 \usepackage[english]{babel}
 \usepackage{xcolor}
+\usepackage{graphicx}
 \usepackage{titlesec}
-\usepackage[utf8]{inputenc}
+%\usepackage[utf8]{inputenc}
 
 \title{Machine Learning and Computer Systems Notes}
 \author{Zhongzhu Zhou Ph.D. reading}
@@ -52,9 +55,7 @@ The background of transformer is seq2seq and attention.
 \subsubsection{AutoFormer: Searching Transformers for Visual Recognition}
 Previous works on designing vision transformers are based upon manual crafting, which heavily relies on human expertise and typically requires a deal of trial-and- error ~\cite{yuan2021tokens, touvron2021training, dosovitskiy2020image},.
 
-we propose a supernet training strategy called weight entanglement dedicated to transformer architecture. 
-
-we propose a supernet training strategy called weight entanglement dedicated to transformer architecture. The central idea is to enable dif- ferent transformer blocks to share weights for their common parts in each layer. An update of weights in one block will affect all other ones as a whole,
+we propose a supernet training strategy called weight entanglement dedicated to transformer architecture. The central idea is to enable different transformer blocks to share weights for their common parts in each layer. An update of weights in one block will affect all other ones as a whole,
 
 This strategy is different from most one-shot NAS methods \cite{guo2020single, chu2021fairnas, wu2019fbnet}
 
@@ -70,11 +71,12 @@ We perform a evolutionary search with a model size constraint over the well-trai
 
 Given a 2D image, we first uniformly split it into a se- quence of 2D patches. A transformer encoder consists of alternating blocks of multihead self-attention (MSA) and multi-layer perceptron (MLP) blocks. LayerNorm (LN) [2] is applied before ev- ery block, and residual connections after every block.
 
+weight entanglement:
+
 where W is the weight of the supernet, W is shared across all the architecture candidates
 Since it is impossible to enumerate all the architectures $\alpha in A$ for evaluation, prior works resort to random search [34, 4], evolution algorithms [43, 16] or reinforcement learning [40, 48] to find the most promising one.
 
-
-directly apply one-shot NAS for transformer search fol- lowing classical weight sharing strategy [16], using differ- ent weights for different blocks in each layer, because of the slow convergence and unsatisfactory performance. The reasons: 1. The reason might be that the independent training of transformer blocks results in the weights being updated by limited times. 2. The perfor- mances of subnets inheriting weights from the one-shot su- pernet, trained under classical weight sharing strategy, are far below their true performances of training from scratch. 
+directly apply one-shot NAS for transformer search fol- lowing classical weight sharing strategy [16], using differ-ent weights for different blocks in each layer, because of the slow convergence and unsatisfactory performance. The reasons: 1. The reason might be that the independent training of transformer blocks results in the weights being updated by limited times. 2. The perfor- mances of subnets inheriting weights from the one-shot su- pernet, trained under classical weight sharing strategy, are far below their true performances of training from scratch. 
 
 The underlying reason is that homogeneous blocks are structurally compatible, such that the weights can share with each other. During implementation, for each layer, we need to store only the weights of the largest block among the n homogeneous candidates. The remaining smaller build- ing blocks can directly extract weights from the largest one.
 
@@ -84,20 +86,17 @@ Such partition allows the search algorithm to concentrate on finding models with
 
 For mutation, a candidate mutates its depth with probability Pd first. Then it mutates each block with a probability of Pm to produce a new architecture.
 
-\emph{my comprehension:} 1. For the weight entanglement, can we select several blocks to cobine them as a more effective subsupernets? 
+\emph{my comprehension:} 1. For the weight entanglement, can we select several blocks to combine them as a more effective sub-supernets?  2. Use scrath result in better performance?
 
 \section{Virtualization}
 \section{Computer System}
 \subsection{MAEE - Multiple Applications Execution time Estimation}
-Insigts:
-
+\paragraph{Insights:}
 \begin{itemize}
 	\item make a open-source dataset for the applications 
 	\item Design an accurate model for co-running them with the fact of time shifting. Esitimate the future running time.
-	\item 
+	\item Label different kind of applications
 \end{itemize}
-
-
 
 \subsubsection{perf-tools}
 \begin{itemize}
@@ -131,9 +130,25 @@ cpu/t1=v1[,t2=v2,t3 ...]/modifier                  [Raw hardware event descrip
 
 \subsubsection{Job placement using reinforcement learning in GPU virtualization environment}
 
- This study defines the resource utilization history of applications and proposes a reinforcement learning-based job placement technique, which uses it as an input. For resource utilization history learning, a deep reinforcement learning model (DQN) is used.
+This study defines the resource utilization history of applications and proposes a reinforcement learning-based job placement technique, which uses it as an input. For resource utilization history learning, a deep reinforcement learning model (DQN) is used.
+
  
- 
+\subsubsection{The Application Slowdown Model: Quantifying and Controlling the Impact of Inter-Application Interference at Shared Caches and Main Memory}
+
+abstract: Unfortunately, prior works on estimating slowdowns either lead to inaccurate estimates, do not take into account shared caches, or rely on a priori application knowledge. ASM that accurately estimates application slowdowns due to interference at both the shared cache and main memory.  1. minimizes interference for the application at the main memory, 2.quantifies the interference the application receives at the shared cache Usage: slowdown-aware cache partitioning, slowdown-aware memory bandwidth parti- tioning and an example scheme to provide soft slowdown guarantees.
+
+background, motivation: profiling before or not?  no free resources, foreground and background jobs are run together, input set dependent => it's hard to estimate its alone execution time online.   by observing its aggregate request service behavior rather than individual request service behavior to quantify interference.  the performance of each application is roughly proportional to the rate at which it accesses the shared cache.   an application’s slowdown depends on the sensitivity of its performance to cache capacity and memory bandwidth, making online slowdown estimation a hard problem.  
+
+related work: Fairness via Source Throttling (FST) \cite{ebrahimi2010fairness}  and Per-thread cycle accounting (PTCA) \cite{du2013per} estimate slowdown due to both shared cache and main memory interference While several prior works (e.g., \cite{ebrahimi2010fairness,du2013per, mutlu2007stall,subramanian2013mise}) proposed online mechanisms to estimate application slowdowns either inaccurate and/or do not take into account shared caches. FST, PTCA determine the number of cycles by which each request of the application is delayed due to interference at the shared cache and main memory.   STFM \cite{mutlu2007stall} making it difficult to accurately estimate the interference cycles for each application. FST uses a pollution filter for each appli- cation that tracks the blocks of the application that were evicted by other applications. PTCA uses an auxiliary tag store. But they are inaccurate. First, both FST and PTCA quantify interference at an individual request granularity.  In fact, MISE \cite{subramanian2013mise} observes that the performance of a memory-bound application is proportional to the rate at which its memory accesses are served.
+
+motivation: A shared cache only makes the problem worse as the request stream of an application to main memory could be completely different when it shares the cache with other applications versus when it runs alone.  interference behavior varies widely across requests and is difficult to estimate accurately by sampling and scaling. ASM build an accurate, low- overhead, online model
+
+Design: by using an auxiliary tag store [53,56] to determine the number of shared cache misses that would have been hits if the application did not share the cache with other applications This aggregate contention miss count is used along with the average miss service time (from the previous step) to estimate the time it would have taken to serve the application’s requests had it been run alone.   $slowdown = \frac{performance_{alone} ~ CATCH_{alone}}{performance_{share} ~ CATCH_{share}}$ on the other hand, can be estimated more accurately by exploiting the observation made by several prior works that applications’ phase behavior is relatively stable over time scales on the order of a few million cycles.   online: it would not eliminate shared cache interference, since the caches cannot be warmed up at will in a short time duration.  Online cannot let the application run by itself to warm up the memory. Minimizing main memory interference, quantifying interference at the shared cache is another better choice to estimate $cache_{alone}$. 
+
+Impelment: 1. $ CAR_{shared}$ Access / Q 2. $CAR_{alone}$ 
+
+\emph{Insights}: 1. I guess ASM want to predict in the runtime, thus, it need to reduce interference and use the cache access manners to predict the interference 2. different dimensional of current methods: a. profiling or not profiling b. online or offline c. two or multiple d. offset of applications e. complexity of model 3. ASM only roughly connect performance of model to the proportional to the rate at which it access the shared cache 4. 考虑到GPU程序，资源冲突上有没有什么区别？ GPU版本 + CPU版本 5. Can we find some patterns co-running applications.  6. Memory Bound (Data cannot serve) + Comput Bound (Data can serve) => Memory Bound*2? 7. They ignore the compute intensive? 8. 长时间的特征变化肯定是不一样的，需要用cach alone 时序数据而不是时刻数据去做预测
+
 \subsubsection{Sequence-to-sequence models for workload interference prediction on batch processing datacenters}
 
 Since the average utilization is estimated to be below 50\%~\cite{barroso2007case, reiss2012heterogeneity} The principal problem when co-locating resource-sharing ap- plications is to ensure that competition will not ruin their QoS,
@@ -162,8 +177,7 @@ EOS. This feature vector takes value 0 at every time step except the last one, w
 
 In that scenario, EOS is just a special word that stops the decoding process, which means that if the decoder emits the ‘‘EOS’’ symbol the decoding process is stopped. In our setting the EOS is a new feature that takes a real value at every time step.
 
-We denote by PCFa and PCFb the percentage completion features for input sequences a and b, respectively. Both features contain at time t how much of the workload has been completed
-until t, expressed as a percentage. For a given sequence s of length N, we define PCFs = (1 ·100, 2 ·100,..., N ·100). Notice that, by construction, PCF features contain monotonically increasing values that must finish with value 100. Nevertheless the rate of increment at every time step will depend on the overall number of time steps of the sequence.
+We denote by PCFa and PCFb the percentage completion features for input sequences a and b, respectively. Both features contain at time t how much of the workload has been completed until t, expressed as a percentage. For a given sequence s of length N, we define PCFs = (1 ·100, 2 ·100,..., N ·100). Notice that, by construction, PCF features contain monotonically increasing values that must finish with value 100. Nevertheless the rate of increment at every time step will depend on the overall number of time steps of the sequence.
 
 vmstat, iostat, ifstat and perf. The dataset used in the experiments contains traces generated by a variety of micro-benchmarks (workloads). The workloads used have been extracted from different suites: HiBench [10], Spark-perf [12] and SparkBench [11]. 
 
@@ -193,11 +207,11 @@ In \cite{berral2015aloja} Aloja-ML is presented as a framework for character- iz
 
 \emph{Insights}: 
 
-1. not consider some applications are running in the nodes. $a^b$ represents an execution of the co-located pair. $a^{\rightarrow} \wedge b$ For the percentage completion time, it's hard to know whether the 
+1. not consider multiple applications are running in the nodes. $a^b$ represents an execution of the co-located pair. $a^{\rightarrow} \wedge b$ For the percentage completion time, 
 
 2. Can we use a unsupervised learning algorithm for this problem?  to do a classification for the program?  Like the roofline model? I can try this.
 
-3. No one use a SPEC HPC benchmark.
+3. No one use a SPEC, NPB HPC benchmark.
 
 4. The author do not consider other time-series model as comparison
 
@@ -205,10 +219,36 @@ In \cite{berral2015aloja} Aloja-ML is presented as a framework for character- iz
 
 6. Can we design one NN for one index?
 
-7. Can we focus on more combination?
+7. Can we focus on more combination of system profiling?
+
+8. profiling slowdown
+
+9. what is exactly usage of EOS or PCF?
 
 \subsection{Resource Management System}
 \subsubsection{Scheduling Scenario - Theory and Practice in Parallel Job Scheduling}
+\subsubsection{Differentiate Quality of Experience Scheduling for Deep Learning Inferences with Docker Containers in the Cloud}
+However, cloud providers fail to offer a QoE-based option to their clients. Clients have to balance the budget and quality of expesystem
+riences (e.g., response time). DQoES accepts clients’ specifications on targeted QoEs, and dynamically adjusts resources to approach their targets. 
+
+Pros: 1. the author finds a good cut-off to introduce their idea, to focus on differentiating QoEs for deep learning backend inferences. 2. The paper design two algorithms, one for deciding the resources limit for the container to approach the QoS target and another for reducing adjustment overhead at each time point.
+
+Cons: A. Typos and Ambiguous: 1. page2 line44 shall be back-end instead of backed 2. It is ambiguous of the number of workers and the meaning of the purple rectangle in the figure 1 3. what does page 3 line 39 'each deep learning model that runs this worker.' mean? 4. why workers monitor track models instead of tracking workers' performance? 5. It's messy to organize the all kinds of monitors in figure 1 6. Table I shall use $T_{R_i}$ instead of $T_R$ 7. The table I does not explain the meaning of set C 8. what does $R_g$ resource usage mean in the Table I? CPU, mem or ? B. Ideas: 9.  $1− \frac{q_i}{Q_G}×R_Gx\beta$ does $R_G*\beta$ will be bigger than 1? How to limit $1− \frac{q_i}{Q_G}×R_Gx\beta$ does $R_G*\beta < 1$  10. why the algorithm only focus on the CPU usage to represent the resource demand for the deep learning model? 101 The paper does not explain why the limit of resources for a model is related to the global QoS target - $\frac{q_i}{Q_G}$ in Line 18 in algorithm 1 12. Many parameters in an algorithm cannot understand until reading your experiments. 13. The paper lack overhead, throughput, scheduling integration, and resources usage assessment. And what is GPU setting in the experiment and the size of nodes are too small to simulate a cluster environment 134 The paper does not handle the resource contention slowdown between these containers. Does the author consider the resources are not infinite and adjust sharing resources may result in slowdown of model inference? 15. I don't see any effect of IV variable in algorithm 2 16. Under the limited resources, the author said could to approach the targets by evenly distributing all the resources. Can we restrict part of the service to reach other models' target QOS?  17. the paper shall compare more with the Qos aware scheduling algorithm (e.g., ASPLOS 2021 Sinan: ML-Based and QoS-Aware Resource Management for Cloud Microservices) 18. Docker Swarm contains a lot of load-balance policy,  it's unfair to say 'Docker Swarm places containers based on the number of containers on each worker and assumes each container allocates an equal share of resources'.  
+
+Overall, authors shall take more effort to explain the intuition of two algorithms and reorganize the order of content of the paper to explain each details of the concept in the algorithms. Also, there is a space to improve the experiment.
+
+background: 1 balance the budget from its own end and deliver the quality of experiences .2. different applications lead to various QoEs requirements. 3. they are provided with various resource levels. These levels fail to link to QoEs directly => fill the gap 该文章想把QOS level和resource level 做一个绑定 这是一个好的想法? it is a challenge to differentiate the deep learning inferences, which require micromanagement on the resources of each task at runtime. 4. alpha 算法没有给出解释 后面实验需要给出
+
+related work: ProCon [23] optimizes the cluster by selecting a best-fit host for incoming tasks Clockwork [27] exploits predictable execution times of deep neural network inference. Optimus [26] employs an online fitting technique to predict model convergence and sets up performance models to estimate training speed.  FIRM [28] considers the resource sharing. It reduces the SLO violations by lever- aging online telemetry data and utilizing a support vector machine based model to identify the key components that are likely to become resource bottlenecks. AI4DL [29], [36] studies the training processing of deep learning applications within IBM’s DLaaS containers. It demonstrates that CPU and memory usage can be reduced significantly by leveraging typ- ical resource usage patterns.
+
+Design: the target of system is to minimize the the models in the category perform better/poor than the preset QoE value, and sum o-p (target - performance).  Why the qi = oi - pi?  It seems the author use a $1− \frac{q_i}{Q_G}×R_G ×β$ * last time resources to tune the resource limit. BUT WHY one model's resource limit is related to other QOS target of containers? And the overhead to adjust the constraint? 
+
+Exp: why only the applications focus on the cpu usage? We can also draw a graph to track the job trace  how to move the application between the node to improve the QOS? QOS aware -> We will design container placement and migration strategies with respect to the states of worker nodes.  Use a model to predict the QOS slowdown.
+
+\emph{Insights}: 
+1.Use a model to predict the QOS slowdown. (given resources to predict QOS) \\
+2.把QOS level和resource level 做一个绑定 这是一个好的想法 Given resources to predict the QOS
+3. Draw a graph to trace a job to take this a feature of the job
 
 \subsubsection{Scalable system scheduling for HPC and big data}
 
@@ -226,16 +266,43 @@ I. found an interesting insights in my past paper. The layout affects the interf
 4. Can we use the algorithm into the cloud computing
 
 \subsubsection{异构计算系统调度理论与方法}
+背景:\\
 1. 使用的计算资源具有多种类型的计算能力 SIMD MIMD 向量 \\
 2. 不同计算类型的计算资源能够相互协调运行 \\
 3. 不同子任务的并行性需求类型 \\
 4. 并行性 + 异构性 \\
-目标: 最短时间
+目标: 最短时间\\
+网格GLOBUS: 构造层 - 连接层 - 资源层 - 汇聚层\\
+CPU + 协处理器 GPU/MIC \\
+云计算服务层次;1.应用层, 2.平台层(软件框架), 3. 基础设施层(系统资源访问, 资源管理系统), 4. 虚拟化层(容器)
+
+任务调度:\\对MPI OpenMP等分布式并行应用程序进行任务分割; 调度任务可以分为动态，静态任务，局部，全局；t-level, b-level => ASAP,ALAP; 计算节点有限, 计算节点无限, 计算节点任意连接, 复制关键任务, DL动态级调度 - DL = SLB - EST(最早执行时间), MH算法 - SLB，HEFT 算法平均成本, wi + max(rank(successor)); In operations research, the makespan of a project is the length of time that elapses from the start of work to the end
+
+基于动态通信竞争的调度算法:\\平均执行成本，优先权计算，动态通信竞争，最早最晚执行时间，通信边调度，LST,LFT, 通信竞争表调度算法 - Sinnen 通信计算比率 CCR => 低中高通量 并行调度 
+
+任务复制调度策略: \\ \cite{zhao2003experimental} 根据异构处理机上的执行成本来进行任务调度对算法性能有深远影响。 处理机平均计算能力。异构通信链路因子。 list scheduling algorithm => In classical list scheduling algorithms an application is viewed as a directed acyclic graph (DAG), where nodes (or tasks) represent
+computation and edges represent communication. By assigning a weight to each node (typically, the corresponding computation cost) and edge (typically, the
+corresponding communication cost), those algorithms prioritize the nodes to be scheduled on the basis of a value computed by a rank function; this is typically a function of the weights assigned to the nodes and edges of the graph.  标准调度长度,  是否可以运用在某个大的应用内部
+
+可靠性感知的任务调度:\\ 故障率与系统规模的正相关， 位置局部性，与负载具有正相关，故障的传播性（积累）。软件容错模型: TMR，priamry backup model, spare processor model, imprecise computational model, m,k, firm deadline. Weibull 分布 异构计算系统失效率减少 增加或常量等特性。可靠性容错调度: 仅仅通过调度增加系统的可靠性，近几年可靠性成本融入经典调度DLS算法中。 可靠性调度模型: 一个典型调度系统包括 资源模型，工作流模型，调度体系结构和评价指标。schedule queue, dispatch queue. 可靠性分析: $LST(e_{i,j},l_1) = max(EFT(v_i), available(e_{i,j}, l_1))$. Weibull: 可靠性函数: R(t) = $e^{{-\frac{t}{\lambda}}^k}$ 失效率函数: $\frac{k}{\lambda^k}*t^{k - 1}$ 每一个处理器有一个 $\lambda$ ,$k$来控制 \cite{murthy2004weibull} 可以估计出 $\lambda$,$k$.  任务调度算法: 基于均值优先排序性质计算任务优先级, 优先级递归计算. 唐的算法加权可靠性成本和最早完成时间成本之和。基于simgrid唐完成了实验
+
+网格分层调度理论:\\局部硬件资源。由于任意处理机网络构成的虚拟节点可能存在多条这种通信路径，因而查找最优可靠的通信路径是提高系统可靠性的有效途径。最早通信完成时间可能会受到动态通信链路的影响,静态Dijkstra选择最早的貌似不可取?  局部调度算法: 每个任务在每个处理机都给予一个系统开销然后挨个寻找最大的匹配？用完全图匹配是不是更好？有没有图匹配相关的调度算法？可靠性驱动的分层任务调度。其实通过模拟器方法，迭代修改算法也是发表论文的一个比较好的方法。模拟的时候，程序的相关信息都是全知道的，这个其实貌似在现实世界中感觉不太可能。。。所以其实在我的研究和传统调度算法研究中间是有gap的?
+
+考虑任务执行行为的安全性调度方法:\\异构计算系统的安全可信性: 分布式信誉管理机制，高效的多QoS静态异构分布式的系统调度算法用于满足多用户兵法安全性在内的多QoS需求。
+
+\begin{figure}[htbp]
+\caption{scheduling architecture}
+\centering
+\includegraphics[width=0.8\textwidth]{xiaoyongSchedule.jpg}
+\end{figure}
 
 \subsubsection{Sinan: ML-Based and QoS-Aware Resource Management for Cloud Microservices}
 
 
 \subsection{Application Framework Optimization}
+\subsubsection{Code Optimization}
+\paragraph{Insights:}
+1. bayesian search in the code to find the openmp compiler's guider : (e.g., the nested number of parallel for)
 \subsubsection{Graph System}
 \paragraph{Krill: A Compiler and Runtime System for Concurrent Graph Processing}
 Notes:
