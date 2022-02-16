@@ -29,7 +29,50 @@ Because it's not a Note for learning the full knowledge, I only store some key p
 
 \section{Machine Learning}
 \subsection{Models}
-\subsubsection{RNN}
+\subsubsection{RNN - CS230}
+For each time $a_t = g_1(W_aa*a_{t-1} + W_ax*x_{t} + b_a), y_t = g_y(W_ya*a_{t} + b_y)$ $g_1,g_2$ are activate function. 
+
+Advantages:\\
+\begin{itemize}
+    \item Possibility of processing input of any length
+    \item Model size not increasing with size of input
+    \item Computation takes into account historical information
+    \item Weights are shared across time
+\end{itemize}
+
+Disadvantages:\\
+\begin{itemize}
+    \item Computation being slow
+    \item Difficulty of accessing information from a long time ago
+    \item Cannot consider any future input for the current state
+\end{itemize}
+
+\emph{Insights:} 1. Shall we consider future input? (maybe we only have the run alone's information, we can consider the future condition)
+
+\begin{figure}[htbp]
+\caption{Different types of RNN}
+\centering
+\includegraphics[width=0.8\textwidth]{stanford.edu__shervine_teaching_cs-230_cheatsheet-recurrent-neural-networks.png}
+\end{figure}
+
+Loss: accumulate all time stamp's loss
+
+Backpropagation is done at each point in time. At timestep T, the derivative of the loss $\mathcal{L}$ with respect to weight matrix W.
+
+The vanishing and exploding gradient phenomena are often encountered in the context of RNNs. The reason why they happen is that it is difficult to capture long term dependencies because of multiplicative gradient that can be exponentially decreasing/increasing with respect to the number of layers. Always, we capping the maximum of gradient to remedy this problem.
+
+\begin{itemize}
+    \item Update gate $\Gamma$ How much past should matter now?	GRU, LSTM
+    \item Relevance gate $Gamma$ Drop previous information?	GRU, LSTM
+    \item Forget gate F Erase a cell or not?	LSTM
+    \item Putput gate How much to reveal of a cell?	LSTM
+\end{itemize}
+
+\begin{figure}[htbp]
+\caption{GRU versus LSTM}
+\centering
+\includegraphics[width=0.8\textwidth]{stanford.edu__shervine_teaching_cs-230_cheatsheet-recurrent-neural-networks-2.png}
+\end{figure}
 
 \subsection{Meta-Learning}
 \subsection{NAS}
@@ -40,6 +83,8 @@ Recently, one-shot NAS substantially reduces the computation cost by training on
 
 Therefore, we can randomly choose which compound edge(s) to split and focus on how many com- pound edge(s) to split. In this work, we pre-define a training time budget T . If the total training time of supernet and all currently trained sub-supernets exceeds T , we will stop the split to avoid training more sub-supernets. Generally, T is set to be twice of one-shot supernet training time. 
 
+\emph{Insights:}
+
 Insight 1: When shall we stop? Use a GAP.
 Insight 2: Why we always split the NN in the begining instead of during the experiments (DFS or BFS?) How to search efficently.
 
@@ -49,7 +94,7 @@ What can we split first? Choose the best then the edge.
 
 The background of transformer is seq2seq and attention.
 \subsubsection{seq 2 seq}
-~\cite{sutskever2014sequence} introduce 
+~\cite{sutskever2014sequence} introduce the seq2
 \subsubsection{attention}
 
 \subsubsection{AutoFormer: Searching Transformers for Visual Recognition}
@@ -86,16 +131,29 @@ Such partition allows the search algorithm to concentrate on finding models with
 
 For mutation, a candidate mutates its depth with probability Pd first. Then it mutates each block with a probability of Pm to produce a new architecture.
 
-\emph{my comprehension:} 1. For the weight entanglement, can we select several blocks to combine them as a more effective sub-supernets?  2. Use scrath result in better performance?
-
+\emph{Insights:} 1. For the weight entanglement, can we select several blocks to combine them as a more effective sub-supernets?  2. Use scrath result in better performance?
+\subsubsection{Few-shot Neural Architecture Search}
+1. Abstraction: 
+\emph{Insights:} 
 \section{Virtualization}
 \section{Computer System}
 \subsection{MAEE - Multiple Applications Execution time Estimation}
-\paragraph{Insights:}
+\subsubsection{Insights:}
 \begin{itemize}
 	\item make a open-source dataset for the applications 
 	\item Design an accurate model for co-running them with the fact of time shifting. Esitimate the future running time.
 	\item Label different kind of applications
+	\item What is the realistic scenario for the scheduling problem?
+    \item For the related work, we know that there are several works before. They focused on 1. dynamic or static 2. optimize different features (Cache, Memory access, etc) to let the features be more accurate. 3. Add new features 4. Modify the model
+    \item current datasets: 1. SPEC 2006 2. NPB applications with high memory intensity (e.g., soplex, libquantum, mcf ) and high cache sensitivity (e.g., ft, dealII, bzip2). TPC-C [68] and the Yahoo Cloud Serving Benchmark (YCSB) HiBench [10], Spark-perf [12] and SparkBench [11]. Shuhai benchmark
+    \item What is the boundary of ML applied in the scheduling?
+\end{itemize}
+
+What we want to do?:
+\begin{itemize}
+    \item 1. Select 1000 benchmarks and do the classification for these applications. We choose several dimension to classify: 1. HPC,ML,BIG DATA 2. compute-bound, network-bound, memroy-bound
+    \item 2. When we co-execute these applications, the interface between them and relationship between the dimension supervised together.
+    \item 3. Profiling results
 \end{itemize}
 
 \subsubsection{perf-tools}
@@ -130,12 +188,25 @@ cpu/t1=v1[,t2=v2,t3 ...]/modifier                  [Raw hardware event descrip
 
 \subsubsection{Job placement using reinforcement learning in GPU virtualization environment}
 
-This study defines the resource utilization history of applications and proposes a reinforcement learning-based job placement technique, which uses it as an input. For resource utilization history learning, a deep reinforcement learning model (DQN) is used.
+abstract: This study defines the resource utilization history of applications and proposes a reinforcement learning-based job placement technique, which uses it as an input. For resource utilization history learning, a deep reinforcement learning model (DQN) is used. 
 
+background: Many large cloud providers, such as Amazon EC2 [1], Nimbix [2], Microsoft Azure [3], and Alibaba [4] provide GPU services. When a user requests a GPU, these service providers (e.g., Kubernetes [5], Mesos [6]) grant exclusive access rights to the user instead of on- demand access. NVIDIA has provided a Multi-Process Service (MPS) [12] that executes multiple applications in one process by GPU sharing. However, this technology can be helpful for performance improvement if, and only if the kernel pattern of the application is known. HPC+ML, 
+
+related work: There are studies on the scheduling of co-execution tasks of applications in GPU resources: the co-placement method of applications is based on monitoring \cite{chang2017kubernetes,gu2018gaiagpu}, and a weight-based placement method using the GPU use profiling information of applications \cite{hong2017fairgv}.  
+
+motivation:  VGG16, RESNET-50, LAMMPS, QMCPACK. the HPC applications have various resource utilization patterns depend- ing on the execution stage. For the comparison, we used three deep-learning applications (CNN, vgg16, googlenet) of TensorFlow benchmark showing similar resource utilization characteristics and two HPC applications (LAMMPS and GROMACS) of NGC (Nvidia GPU Cloud). Scheduling that predicts the performance by using a conventional heuristic method through the usages of each resource is an NP-hard problem. 
+
+design: 1. describe multiple co-run applications 2. history of the application to be used for learning is defined 3. learning-based job placement method is proposed, which uses the defined resource utilization history as input.   1. Resource utilization history items of GPU application: 
+
+\begin{figure}[htbp]
+\caption{scheduling architecture}
+\centering
+\includegraphics[width=0.8\textwidth]{GPUAPP.png}
+\end{figure}
  
 \subsubsection{The Application Slowdown Model: Quantifying and Controlling the Impact of Inter-Application Interference at Shared Caches and Main Memory}
 
-abstract: Unfortunately, prior works on estimating slowdowns either lead to inaccurate estimates, do not take into account shared caches, or rely on a priori application knowledge. ASM that accurately estimates application slowdowns due to interference at both the shared cache and main memory.  1. minimizes interference for the application at the main memory, 2.quantifies the interference the application receives at the shared cache Usage: slowdown-aware cache partitioning, slowdown-aware memory bandwidth parti- tioning and an example scheme to provide soft slowdown guarantees.
+abstract: Unfortunately, prior works on estimating slowdowns either lead to inaccurate estimates, do not take into account shared caches, or rely on a priori application knowledge. ASM that accurately estimates application slowdowns due to interference at both the shared cache and main memory.  1. minimizes interference for the application at the main memory, 2.quantifies the interference the application receives at the shared cache Usage: slowdown-aware cache partitioning, slowdown-aware memory bandwidth parti- tioning and an example scheme to provide soft slowdown guarantees. (rate means speed of accessing rate)
 
 background, motivation: profiling before or not?  no free resources, foreground and background jobs are run together, input set dependent => it's hard to estimate its alone execution time online.   by observing its aggregate request service behavior rather than individual request service behavior to quantify interference.  the performance of each application is roughly proportional to the rate at which it accesses the shared cache.   an application’s slowdown depends on the sensitivity of its performance to cache capacity and memory bandwidth, making online slowdown estimation a hard problem.  
 
@@ -143,11 +214,48 @@ related work: Fairness via Source Throttling (FST) \cite{ebrahimi2010fairness}  
 
 motivation: A shared cache only makes the problem worse as the request stream of an application to main memory could be completely different when it shares the cache with other applications versus when it runs alone.  interference behavior varies widely across requests and is difficult to estimate accurately by sampling and scaling. ASM build an accurate, low- overhead, online model
 
-Design: by using an auxiliary tag store [53,56] to determine the number of shared cache misses that would have been hits if the application did not share the cache with other applications This aggregate contention miss count is used along with the average miss service time (from the previous step) to estimate the time it would have taken to serve the application’s requests had it been run alone.   $slowdown = \frac{performance_{alone} ~ CATCH_{alone}}{performance_{share} ~ CATCH_{share}}$ on the other hand, can be estimated more accurately by exploiting the observation made by several prior works that applications’ phase behavior is relatively stable over time scales on the order of a few million cycles.   online: it would not eliminate shared cache interference, since the caches cannot be warmed up at will in a short time duration.  Online cannot let the application run by itself to warm up the memory. Minimizing main memory interference, quantifying interference at the shared cache is another better choice to estimate $cache_{alone}$. 
+Design: by using an auxiliary tag store [53,56] to determine the number of shared cache misses that would have been hits if the application did not share the cache with other applications This aggregate contention miss count is used along with the average miss service time (from the previous step) to estimate the time it would have taken to serve the application’s requests had it been run alone.   $slowdown = \frac{performance_{alone} ~ CATCH_{alone}}{performance_{share} ~ CATCH_{share}}$ (CATCH means cache access rate) on the other hand, can be estimated more accurately by exploiting the observation made by several prior works that applications’ phase behavior is relatively stable over time scales on the order of a few million cycles.   online: it would not eliminate shared cache interference, since the caches cannot be warmed up at will in a short time duration.  Online cannot let the application run by itself to warm up the memory. Minimizing main memory interference, quantifying interference at the shared cache is another better choice to estimate $cache_{alone}$. 
 
-Impelment: 1. $ CAR_{shared}$ Access / Q 2. $CAR_{alone}$ 
+Impelment: 
 
-\emph{Insights}: 1. I guess ASM want to predict in the runtime, thus, it need to reduce interference and use the cache access manners to predict the interference 2. different dimensional of current methods: a. profiling or not profiling b. online or offline c. two or multiple d. offset of applications e. complexity of model 3. ASM only roughly connect performance of model to the proportional to the rate at which it access the shared cache 4. 考虑到GPU程序，资源冲突上有没有什么区别？ GPU版本 + CPU版本 5. Can we find some patterns co-running applications.  6. Memory Bound (Data cannot serve) + Comput Bound (Data can serve) => Memory Bound*2? 7. They ignore the compute intensive? 8. 长时间的特征变化肯定是不一样的，需要用cach alone 时序数据而不是时刻数据去做预测
+1.ASM divides execution into multiple quanta, each of length Q cycles $ CAR_{shared}$ Access / Q 
+
+2. ASM divides each quantum into epochs of length E cycles (thousands of cycles)  $CAR_{alone}$   = $\frac{epoch-hits + epoch-misses}{(E*epoch-count) - (epoch-excess-cycles)}$   epoch-excess-cycles is the number of excess cycles spent serving the application’s contention misses—those that would have been hits had the application run alone.  epoch-excess-cycles = ($\sharp$ Contention Misses) × (avg-miss-time − avg-hit-time). $\sharp$ Contention Misses = epoch-ATS-hits − epoch-hits $avg-miss-time = \frac{epoch-miss-time}{epoch-misses}$ $avg-hit-time = \frac{epoch-hit-time}{epoch-hits}$ how many seconds one hit, one misses, we minus them we can get the second we shall not misses, the time seconds*misses => cycles. 
+
+3. Mem Queueing delay to show cache alone, we give the application highest priority. But it's not enough. if we do not schedule this highest priority application, but other app submit, they will be scheduled. Later, the highest priority will be delayed. the author take this as the ATS misses. and $avg-queueing-dealy = \frac{\sharp queueing cycles}{epoch-misses}$ $CAR_{alone} = \frac{as-above}{(as-above) - (epoch-ATS-misses*avg-queueing-delay)}$ ATS means we can hit alone, hit is real hit. The diff is the contention miss.
+
+4. Overhead => dynamic cost because it need to store the queueing cycles and several variables
+
+EXP:
+
+similar to Ramulator \cite{kim2015ramulator}. We validated the simu- lator against DRAMSim2 \cite{rosenfeld2011dramsim2} and Micron’s behavioral Verilog model [41]. https://github.com/CMU-SAFARI. SPEC CPU2006 [4] and NAS Parallel Benchmark
+
+We compute IPCalone for the same amount of work com- pleted in the alone run as that completed in the shared run for each quantum.
+
+1 error,  2 latency. 3 we seek to isolate the benefits of using epoch-based aggregation to account solely for memory interference from the benefits of using epoch-based aggregation for both main memory and shared cache interference. 4 ensitivity to System Parameters a Core count. why accuracy decrease? However, the effect of this queueing is greater at higher core counts and is harder to account for entirely. b capacity of cache size c quantum length and epoch length
+
+leveraging ASM:
+
+1. Cache partitioning 1. $slowdown_n = \frac{CAR_{alone}}{CAR_n}$  the core idea is to esitmate $CAR_n$ only we update cache policy to n-way cache we can know. But we can estimate by ASM. Also the challenge is to meansure the number of cycles to serve an application. The author use miss - hit as the excess cycles 2. we use the look-ahead algorithm used in Utility-based Cache Partitioning (UCP) [56] to partition the cache ways such that the overall slowdown is minimized. $slowdown-utility^{n+k}_n = \frac{slowdown_n - slowdown_{n+k}}{k}$  For more details on the partitioning algorithm, we refer the reader to \cite{qureshi2006utility}. The author use harmonic speedup to evaluate the ASM.
+
+
+\emph{Insights}: 
+
+1. I guess ASM want to predict in the runtime, thus, it need to reduce interference and use the cache access manners to predict the interference 
+
+2. different dimensional of current methods: a. profiling or not profiling b. online or offline c. two or multiple d. offset of applications e. complexity of model 
+
+3. ASM only roughly connect performance of model to the proportional to the rate at which it access the shared cache 
+
+4. 考虑到GPU程序，资源冲突上有没有什么区别？ GPU版本 + CPU版本 
+
+5. Can we find some patterns co-running applications. 
+
+6. Memory Bound (Data cannot serve) + Comput Bound (Data can serve) => Memory Bound*2? 
+
+7. They ignore the compute intensive?
+
+8. 长时间的特征变化肯定是不一样的，需要用cach alone 时序数据而不是时刻数据去做预测. 文章是用每秒平均的cache关系去做一些分析
 
 \subsubsection{Sequence-to-sequence models for workload interference prediction on batch processing datacenters}
 
@@ -226,6 +334,12 @@ In \cite{berral2015aloja} Aloja-ML is presented as a framework for character- iz
 9. what is exactly usage of EOS or PCF?
 
 \subsection{Resource Management System}
+\subsubsection{CCF Sys 2021}
+\paragraph{陈全 - 面向异构云平台的智能资源管理与调度}
+1. 边缘节点贡献资源性能下降，资源请求随附在变化而变化 - Nautilus
+2. 调度的冷启动的问题 - 都是用现有的模拟数据负载
+
+
 \subsubsection{Scheduling Scenario - Theory and Practice in Parallel Job Scheduling}
 \subsubsection{Differentiate Quality of Experience Scheduling for Deep Learning Inferences with Docker Containers in the Cloud}
 However, cloud providers fail to offer a QoE-based option to their clients. Clients have to balance the budget and quality of expesystem
@@ -276,19 +390,21 @@ I. found an interesting insights in my past paper. The layout affects the interf
 CPU + 协处理器 GPU/MIC \\
 云计算服务层次;1.应用层, 2.平台层(软件框架), 3. 基础设施层(系统资源访问, 资源管理系统), 4. 虚拟化层(容器)
 
-任务调度:\\对MPI OpenMP等分布式并行应用程序进行任务分割; 调度任务可以分为动态，静态任务，局部，全局；t-level, b-level => ASAP,ALAP; 计算节点有限, 计算节点无限, 计算节点任意连接, 复制关键任务, DL动态级调度 - DL = SLB - EST(最早执行时间), MH算法 - SLB，HEFT 算法平均成本, wi + max(rank(successor)); In operations research, the makespan of a project is the length of time that elapses from the start of work to the end
+任务调度:\\对MPI OpenMP等分布式并行应用程序进行任务分割; 调度任务可以分为动态，静态任务，局部，全局；t-level, b-level (静态的BL => SBL)  => ASAP,ALAP; 计算节点有限, 计算节点无限, 计算节点任意连接, 复制关键任务, DL动态级调度 - DL = SBL - EST(最早执行时间), MH算法 - SBL，HEFT 算法平均成本, wi + max(rank(successor)); In operations research, the makespan of a project is the length of time that elapses from the start of work to the end
 
 基于动态通信竞争的调度算法:\\平均执行成本，优先权计算，动态通信竞争，最早最晚执行时间，通信边调度，LST,LFT, 通信竞争表调度算法 - Sinnen 通信计算比率 CCR => 低中高通量 并行调度 
 
-任务复制调度策略: \\ \cite{zhao2003experimental} 根据异构处理机上的执行成本来进行任务调度对算法性能有深远影响。 处理机平均计算能力。异构通信链路因子。 list scheduling algorithm => In classical list scheduling algorithms an application is viewed as a directed acyclic graph (DAG), where nodes (or tasks) represent
-computation and edges represent communication. By assigning a weight to each node (typically, the corresponding computation cost) and edge (typically, the
-corresponding communication cost), those algorithms prioritize the nodes to be scheduled on the basis of a value computed by a rank function; this is typically a function of the weights assigned to the nodes and edges of the graph.  标准调度长度,  是否可以运用在某个大的应用内部
+任务复制调度策略: \\ \cite{zhao2003experimental} 根据异构处理机上的执行成本来进行任务调度对算法性能有深远影响。 处理机平均计算能力。异构通信链路因子。 list scheduling algorithm => In classical list scheduling algorithms an application is viewed as a directed acyclic graph (DAG), where nodes (or tasks) represent computation and edges represent communication. By assigning a weight to each node (typically, the corresponding computation cost) and edge (typically, the corresponding communication cost), those algorithms prioritize the nodes to be scheduled on the basis of a value computed by a rank function; this is typically a function of the weights assigned to the nodes and edges of the graph.  标准调度长度,  是否可以运用在某个大的应用内部 DRT 数据准备时间
 
 可靠性感知的任务调度:\\ 故障率与系统规模的正相关， 位置局部性，与负载具有正相关，故障的传播性（积累）。软件容错模型: TMR，priamry backup model, spare processor model, imprecise computational model, m,k, firm deadline. Weibull 分布 异构计算系统失效率减少 增加或常量等特性。可靠性容错调度: 仅仅通过调度增加系统的可靠性，近几年可靠性成本融入经典调度DLS算法中。 可靠性调度模型: 一个典型调度系统包括 资源模型，工作流模型，调度体系结构和评价指标。schedule queue, dispatch queue. 可靠性分析: $LST(e_{i,j},l_1) = max(EFT(v_i), available(e_{i,j}, l_1))$. Weibull: 可靠性函数: R(t) = $e^{{-\frac{t}{\lambda}}^k}$ 失效率函数: $\frac{k}{\lambda^k}*t^{k - 1}$ 每一个处理器有一个 $\lambda$ ,$k$来控制 \cite{murthy2004weibull} 可以估计出 $\lambda$,$k$.  任务调度算法: 基于均值优先排序性质计算任务优先级, 优先级递归计算. 唐的算法加权可靠性成本和最早完成时间成本之和。基于simgrid唐完成了实验
 
 网格分层调度理论:\\局部硬件资源。由于任意处理机网络构成的虚拟节点可能存在多条这种通信路径，因而查找最优可靠的通信路径是提高系统可靠性的有效途径。最早通信完成时间可能会受到动态通信链路的影响,静态Dijkstra选择最早的貌似不可取?  局部调度算法: 每个任务在每个处理机都给予一个系统开销然后挨个寻找最大的匹配？用完全图匹配是不是更好？有没有图匹配相关的调度算法？可靠性驱动的分层任务调度。其实通过模拟器方法，迭代修改算法也是发表论文的一个比较好的方法。模拟的时候，程序的相关信息都是全知道的，这个其实貌似在现实世界中感觉不太可能。。。所以其实在我的研究和传统调度算法研究中间是有gap的?
 
-考虑任务执行行为的安全性调度方法:\\异构计算系统的安全可信性: 分布式信誉管理机制，高效的多QoS静态异构分布式的系统调度算法用于满足多用户兵法安全性在内的多QoS需求。
+考虑任务执行行为的安全性调度方法:\\异构计算系统的安全可信性: 分布式信誉管理机制，高效的多QoS静态异构分布式的系统调度算法用于满足多用户并法安全性在内的多QoS需求。具体做法:  安全需求等级提前确定好。 安全需求主要的问题: 1. 缺乏委托机制 2.鉴权 3. 本地信任策略具有局部性 4. 安全表达能力与安全扩展性 信任=直接信任+声誉 一般假设任务执行行为安全性在固定时间间隔内服从泊松分布。发现一个问题，每个计算公式的加权和相处计算的直觉分别是什么？为什么要用这个公式？找个一个安全性概率小于常数$\theta$，安全性概率用来表明任意一台机器可能出错的概率。然后再找具有最早完成时间的任务集合。
+
+任务计算量服从随机分布调度理论:\\ 通过每个任务完成时间的期望和方差，依据线性规划进行调度问题 的最优解分析。对具有指数分布的随机任务调度问题，应用LEPT。调度长度的标准方差。随机调度问题调度长度的期望值的下限是将任务计算量以期望值代替所得到的确定性任务调度问题的调度长度。以往的异构没有考虑的资源需求的多样性。选择一个任务时间优于另一个任务时间这种优于的概率高的。利用概率累计函数。
+
+能耗感知随机任务调度策略:\\DFVS技术动态调节操作频率。Clark方程估计正态分布的最大值的期望值和方差。当我们有了每个处理器上随机调度时间最大值的期望，现在要这个期望<d代表所有任务都在d内完成，这个P(<d)变成了累计分布函数CDF。算法加权能耗概率和任务完成时间概率。应用:mpegplay,madplay,tmndec,toast
 
 \begin{figure}[htbp]
 \caption{scheduling architecture}
@@ -367,10 +483,46 @@ David Wentzlaff\\
 Associate Professor\\
 Department of Electrical Engineering\\
 Princeton University\\
+
+\subsubsection{Chapter 1: fundamentals of quantitative design and analysis}
+
+\subsubsection{Chapter 6 Review of Memory Hierarchy}
+1. intorduction: 
+
+\subsubsection{Review of Memory Hierarchy}
+
+1. Temporal locality, spital locality. cache miss = latency and bandwidth of the memroy
+2. in-order/out-of-order execution
+3. Registers: CMOS, Cache: On-chip CMOS SRAM, Main memory: CMOS DRAM, Disk
+
+What happend if we have infinite storage level. More level is better?
+
+4. number of cycles during which the processor is stalled waiting for a memroy acess - \emph{memory stall cycles} \emph{memory stall cycles} = $ICx\frac{Memroy accesses}{Instruction}xmiss\ rate x miss\ penalty$. So memroy stall cycles => cache's miss. disk stall cycles?
+
+5. using a single number for miss penalty is a simplification.
+
+6. measure cache design - miss rate. It dependedd in architecture (x86 or RISC V) becuae number of memory acess per instructions variy from x86 to RISC V.
+
+7.where to place the blocks? Fully associative, Directed Map, set associative - (first we let the block be set of k, and the block b only can go to b mod k, but it can go anywhere inside the set b mod k. If there are n blocks in a set, the cache placement is called \emph{n-way set associative}.
+
+8. how do a blocks found if it's in the cache? each block have a address tag, every block will check whether the tag match the processors' tag block in parallel. valid bit to show this cache blocks actually store something (cahce line may be null). the tag is used to check the blocks in the set. 
+
+9. approximation fro LRU: use n bits (n equal to the ways in a set). When a set is access the bit corresponding to the way, we turn on (transfer to 1). If all is 1 we close all of them and set the bit we just accessed as 1. And we eject the cache line with full 0.
+
+10. processors traditionally wait for reads to complete but need not wait for writes. read at the same time check tag. (if hit, we have read it! miss we have no harm!). but write cannot do this. For write, we have write through (flush to mem immeditately) and write back. write allocate / no write allocate (will not move to cache when write miss)
+
+11. 
+
+Q:
+
+1. memroy stall cycles => cache's miss. disk stall cycles?
+2. Example, loads and stores, these total $50\%$ of the instructions. Why 1 + 0.5?
+3. What does block offset means? Does the block address means the position of the data storage? And tag in the blocks address only have 0 or 1? or the tag means the offset of the blocks in the cache set?
+4. 
+
 \subsubsection{Readings: Pipelining: Basic and Intermediate Concepts}
 
 processor cycle: moving an instructions on step down the pipeline. Determined by the slowest stage.
-
 
 
 
@@ -381,6 +533,24 @@ processor cycle: moving an instructions on step down the pipeline. Determined by
 	\item \textbf{bypass} you can add extra hardware to your data path, and the extra hardware is going to send the value as soon as it gets created, so you may not have to wait for it to get to the end of the pipeline. So if the data value gets made early, you can just forward that to an instruction which needs it, but that adds extra hardware and complexity to your design. 
 	\item \textbf{Speculate} So, if you have a data hazard, you could assume it's not a problem or you could assume that, you know, everything's gonna be okay. I'll just use the encrypt value for a little bit of time and we'll assume that the value, the old value is equal to the new value or you do data speculations, other ways to do this. And if you make a mistake you catch it by the time you get to the end. And you basically have to re-execute the instruction with the correct value then.  
 \end{itemize}
+
+\section{Mathematics}
+\subsection{Probability Theory}
+\subsubsection{PDF,CDF,PMF}
+1. 如果X是连续型随机变量，那么可以定义它的概率密度函数（probability density function, PDF)，有时简称为密度函数。 我们用PDF在某一区间上的积分来刻画随机变量落在这个区间中的概率，即 $\int^b_a f_X(x) dx$ 
+
+2. 如果X是离散型随机变量，那么可以定义X的概率质量函数（probability mass function, PMF）$P_X(x) = pr(X == x)$
+
+3. 而不管X是什么类型（连续/离散/其他）的随机变量，都可以定义它的累积分布函数（cumulative distribution function ,CDF）$F_X(x) = Pr(X <= x)$，有时简称为分布函数。 \\CDF 对于连续的可以表示为 $\int_{\infty}^x f_X(t) dt$ 那么CDF就是PDF的积分，PDF就是CDF的导数。 \\而CDF对于离散的就是小于等于X的离散值的概率之和。 另外CDF的单调递增（不减）性质可以由它的定义和概率的性质推出
+
+\section{Writing \& Publish}
+\subsection{Journal}
+\subsubsection{Cover Letter}
+I am enclosing herewith a manuscript entitled “Pre-Expedite: Use Hierarchical Structure Space for Improving the Performance of Accessing Small Files in Parallel File System” submitted to “Journal of Computer Science and Technology” for possible evaluation. 
+
+第二段阐述自己的论文的好处
+
+With the submission of this manuscript, I would like to undertake that the above-mentioned manuscript has not been published elsewhere, accepted for publication elsewhere or under editorial review for publication elsewhere; and that my Institute’s (Sun Yat-sen University) representative is fully aware of this submission.
 
 \bibliographystyle{unsrt}
 \bibliography{reference}
