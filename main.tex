@@ -26,12 +26,72 @@
 This is the note for my Ph.D. reading materials. After \emph{two} years' trials in the notes in a `word' document. I find it inefficient in summarizing and citing them in the further latex paper works. Thus, I begin using latex to record my paper reading notes.
 
 Because it's not a Note for learning the full knowledge, I only store some key points or some points I may forget easily.
+\section{Learn: Cuda Programming}
+\subsubsection{Cutlass Programming}
 
-\section{Machine Learning}
-\subsection{Models}
-\subsubsection{RNN - CS230}
-For each time $a_t = g_1(W_aa*a_{t-1} + W_ax*x_{t} + b_a), y_t = g_y(W_ya*a_{t} + b_y)$ $g_1,g_2$ are activate function. 
+\section{Learn: Advanced Mathematics \& Linear Mathematics}
+\section{Learn: Statistics \& probability}
+\subsubsection{PDF,CDF,PMF}
+1. 如果X是连续型随机变量，那么可以定义它的概率密度函数（probability density function, PDF)，有时简称为密度函数。 我们用PDF在某一区间上的积分来刻画随机变量落在这个区间中的概率，即 $\int^b_a f_X(x) dx$ 
 
+2. 如果X是离散型随机变量，那么可以定义X的概率质量函数（probability mass function, PMF）$P_X(x) = pr(X == x)$
+
+3. 而不管X是什么类型（连续/离散/其他）的随机变量，都可以定义它的累积分布函数（cumulative distribution function ,CDF）$F_X(x) = Pr(X <= x)$，有时简称为分布函数。 \\CDF 对于连续的可以表示为 $\int_{\infty}^x f_X(t) dt$ 那么CDF就是PDF的积分，PDF就是CDF的导数。 \\而CDF对于离散的就是小于等于X的离散值的概率之和。 另外CDF的单调递增（不减）性质可以由它的定义和概率的性质推出
+\subsubsection{Poisson Distribution}
+The Poisson Distribution use a $\lambda$ means the number of events happens between the average time 
+\section{Learn: Computer Architecture}
+\subsection{Roofline Model}
+\subsection{Coursera: Computer Architecture, Computer Architecture: A Quantitative Approach}
+David Wentzlaff\\
+Associate Professor\\
+Department of Electrical Engineering\\
+Princeton University\\
+
+\subsubsection{Chapter 1: fundamentals of quantitative design and analysis}
+\subsubsection{Chapter 6 Review of Memory Hierarchy}
+\subsubsection{Review of Memory Hierarchy}
+Notes:
+\begin{itemize}
+    \item Temporal locality, spital locality. cache miss = latency and bandwidth of the memroy
+    \item in-order/out-of-order execution
+    \item Registers: CMOS, Cache: On-chip CMOS SRAM, Main memory: CMOS DRAM, Disk What happend if we have infinite storage level. More level is better?
+    \item number of cycles during which the processor is stalled waiting for a memroy acess - \emph{memory stall cycles} \emph{memory stall cycles} = $ICx\frac{Memroy accesses}{Instruction}xmiss\ rate x miss\ penalty$. So memroy stall cycles => cache's miss. disk stall cycles?
+    \item using a single number for miss penalty is a simplification.
+    \item measure cache design - miss rate. It dependedd in architecture (x86 or RISC V) becuae number of memory acess per instructions variy from x86 to RISC V.
+    \item where to place the blocks? Fully associative, Directed Map, set associative - (first we let the block be set of k, and the block b only can go to b mod k, but it can go anywhere inside the set b mod k. If there are n blocks in a set, the cache placement is called \emph{n-way set associative}.
+    \item how do a blocks found if it's in the cache? each block have a address tag, every block will check whether the tag match the processors' tag block in parallel. valid bit to show this cache blocks actually store something (cahce line may be null). the tag is used to check the blocks in the set. 
+    \item approximation fro LRU: use n bits (n equal to the ways in a set). When a set is access the bit corresponding to the way, we turn on (transfer to 1). If all is 1 we close all of them and set the bit we just accessed as 1. And we eject the cache line with full 0.
+    \item processors traditionally wait for reads to complete but need not wait for writes. read at the same time check tag. (if hit, we have read it! miss we have no harm!). but write cannot do this. For write, we have write through (flush to mem immeditately) and write back. write allocate / no write allocate (will not move to cache when write miss)
+\end{itemize}
+
+Question:
+\begin{itemize}
+\item memroy stall cycles => cache's miss. disk stall cycles?
+\item Example, loads and stores, these total $50\%$ of the instructions. Why 1 + 0.5?
+\item What does block offset means? Does the block address means the position of the data storage? And tag in the blocks address only have 0 or 1? or the tag means the offset of the blocks in the cache set?
+\end{itemize}
+\subsubsection{Readings: Pipelining: Basic and Intermediate Concepts}
+Notes:
+\subsubsection{Data Hazards}
+Notes:
+\begin{itemize}
+	\item \textbf{Schedule} explicitly avoids scheduling instructions that would create data hazards
+	\item \textbf{Stall} freezes earlier stages until preceding instruction has finish producing data value
+	\item \textbf{bypass} you can add extra hardware to your data path, and the extra hardware is going to send the value as soon as it gets created, so you may not have to wait for it to get to the end of the pipeline. So if the data value gets made early, you can just forward that to an instruction which needs it, but that adds extra hardware and complexity to your design. 
+	\item \textbf{Speculate} So, if you have a data hazard, you could assume it's not a problem or you could assume that, you know, everything's gonna be okay. I'll just use the encrypt value for a little bit of time and we'll assume that the value, the old value is equal to the new value or you do data speculations, other ways to do this. And if you make a mistake you catch it by the time you get to the end. And you basically have to re-execute the instruction with the correct value then.  
+\end{itemize}
+\section{Learn: Writing \& Publish}
+\subsection{Journal}
+\subsubsection{Cover Letter}
+\section{Learn: Machine Learning}
+\subsection{auto encoding}
+\subsubsection{Word Embedding}
+One-hot encoding is very easy to understand. But for the word embedding, we need to use a d dimensional variable to represent a words instead of using v dimension array. Here assume we have v words (tokens) in a sentences. Thus, we can make a d*v matrix and multiply it with the one hot encoding. It's easily to know that one hot encoding only contain a 1 in one row. Thus, the multiplication means that this row will use one row (d columns) in the d*v and generate a d*v*v*1 => d*1 vector to represent the words. Thus, we transfer a d*1 vector to v*1 vector after using a d*v parameter matrix. Thus, we can put this parameter matrix into the neural network as a trainable weights.
+
+注意这个地方，d是每个词的特征值，v是总共vocabulary的数目，v不是sequence的长度!
+\subsubsection{seq 2 seq \& RNN}
+~\cite{sutskever2014sequence} introduce the seq2seq model. 
+$a_t = g_1(W_aa*a_{t-1} + W_ax*x_{t} + b_a), y_t = g_y(W_ya*a_{t} + b_y)$ $g_1,g_2$ are activate function. 
 Advantages:\\
 \begin{itemize}
     \item Possibility of processing input of any length
@@ -47,8 +107,6 @@ Disadvantages:\\
     \item Cannot consider any future input for the current state
 \end{itemize}
 
-\emph{Insights:} 1. Shall we consider future input? (maybe we only have the run alone's information, we can consider the future condition)
-
 \begin{figure}[htbp]
 \caption{Different types of RNN}
 \centering
@@ -61,41 +119,91 @@ Backpropagation is done at each point in time. At timestep T, the derivative of 
 
 The vanishing and exploding gradient phenomena are often encountered in the context of RNNs. The reason why they happen is that it is difficult to capture long term dependencies because of multiplicative gradient that can be exponentially decreasing/increasing with respect to the number of layers. Always, we capping the maximum of gradient to remedy this problem.
 
+We can use several technical methods to optimize the RNN. 
+\begin{itemize}
+    \item Stack (cascade) RNN to make the model more complexed.
+    \item bi-direction RNN. Just two RNN and concat the their results
+    \item pretrain the embedding layer
+\end{itemize}
+
+If we want to predict an character, we can use character-level sequences to do the prediction.
+
+During prediction, we can use temprature to improve the probability of the higher-prob char.
+
+encode-decode the init input of decoder is the start sign.
+
+bidrect as encoder + decode the performance is better.
+\subsubsection{LSTM}
 \begin{itemize}
     \item Update gate $\Gamma$ How much past should matter now?	GRU, LSTM
     \item Relevance gate $Gamma$ Drop previous information?	GRU, LSTM
     \item Forget gate F Erase a cell or not?	LSTM
-    \item Putput gate How much to reveal of a cell?	LSTM
+    \item Put gate How much to reveal of a cell?	LSTM
 \end{itemize}
-
 \begin{figure}[htbp]
 \caption{GRU versus LSTM}
 \centering
 \includegraphics[width=0.8\textwidth]{stanford.edu__shervine_teaching_cs-230_cheatsheet-recurrent-neural-networks-2.png}
 \end{figure}
+\subsubsection{attention}
+The first paper try to use attention in seq2seq is Neural Machine Translation by Jointly Learning to Align and Translate~\cite{bahdanau2014neural}. It seems that we aggregate a signle features and use the relationships between the all the hidden feature with the final features in the encoding.
+
+the original paper: v inner product tanh(a single w * concat(final h = $s_0$, old state hi)) => real value. final h for each state s will generate a value alpha. We then softmwax the alpha.
+
+Transformer one: ki = Wk * $h_i$ , q0 = Wq*s0;  ki*q0 = weight. Others is the same as above. So here, we adjust to a single w to two w. W key for the h and W query for the s.
+
+alpha1 * h1 + .... alpha hn = c. Then we concat c in the decoder input.
+
+And each time, we use the Wq*s1 .. Wq*s2.... n.  query for the decoder. each time we need to preserve the h1*Wk and recalculate Wq*s* [Wk*h1 ... Wk*hm] and it will cost m weights calculation. Therefore, it's depended on the seq length.
+
+\textbf{self-attention}
+
+Through the RNN, we can continue using hidden state to calculate c1 c2 c3... for example, if we want to calcualte c3, c3 = Wk*h1*Wq*h3*h1 + Wk*h2*Wq*h3*h2 + Wk*h3*Wq*h3*h3. Less likely to forget.
+
+\textbf{Transformer}
+
+Essentially, we use query for the hidden state to compute the relationship between the key value. And instead of using hi we can use Wv*hi.
+
+How to remove RNN in the attention layer.
+
+Instead of using the hidden state - the rnn output we can use the input directly. Thus (K*Q*v1)*V is the final answer of K*Q => weight, weight * V => final answer.
+
+for each query, the input of the encoder is the original input and the last output of the attention layer.  So we can input the last round's correct answer as the input and the output of the attention layer shall be the next words. 
+
+For the self attention, we map the each input to a query value qi.  The parameters are three weights matrix Wk Wq Wv.
+
+self attention = single - head self attention head.  l head we can have 3l head matrices. We can stack the multiple results of multiple attention layer. 
+
+Then we cascade the multi-head self layer we can generate the final results. (self-attention + dense) = block + resnet skip. IF we have different length for the input and output, we must use a encoder and decoder.
+
+multiple blocks encoder => genereate u1 ... um, then we use attention again. We can use multi head attention to generate mutiple output of x1 .. xt, c1 ... ct then we can calcualte the K*Q*xt*V
+
+But the output actual use a multi head self attention layer. We can generate c1 .. ct. Then we use multi head attention layer for u1 ... um and c1 ... ct to generate z1 ... zt and use dense network to generate the final results.
+
+Therefore, we use encoder as 6 self attention + dense blocks. Then using the results as the input for the attention layer combined with self attention of the correct output. And then the multi head attention layer can generate a final state then using the dense net work to generate the final results.
+
+(encode (self + dense) + self attention) * multi-head attention * dense = final resulst. We can stack the self attention and multihead attention layer again.
+
+The attention is all you need~\cite{vaswani2017attention}
+
+\textbf{Bert}
+
+1. mask words to pretrain the encoding
+2. predict next sentences through BERT
+
+\subsection{Pytorch Tutorial}
+\begin{itemize}
+    \item the model will call the forward process directly if we initialize a model with a forward process in it.
+\end{itemize}
 
 \subsection{Meta-Learning}
 \subsection{NAS}
 \subsubsection{one shot learning}
-
 \subsubsection{few-shot Neural Architecture Search}
-Recently, one-shot NAS substantially reduces the computation cost by training only one supernet- work, a.k.a. supernet, to approximate the perfor- mance of every architecture in the search space via weight-sharing.
-
-Therefore, we can randomly choose which compound edge(s) to split and focus on how many com- pound edge(s) to split. In this work, we pre-define a training time budget T . If the total training time of supernet and all currently trained sub-supernets exceeds T , we will stop the split to avoid training more sub-supernets. Generally, T is set to be twice of one-shot supernet training time. 
-
 \emph{Insights:}
-
 Insight 1: When shall we stop? Use a GAP.
 Insight 2: Why we always split the NN in the begining instead of during the experiments (DFS or BFS?) How to search efficently.
-
 What can we split first? Choose the best then the edge.
-
-\subsection{Transformer}
-
-The background of transformer is seq2seq and attention.
-\subsubsection{seq 2 seq}
-~\cite{sutskever2014sequence} introduce the seq2
-\subsubsection{attention}
 
 \subsubsection{AutoFormer: Searching Transformers for Visual Recognition}
 Previous works on designing vision transformers are based upon manual crafting, which heavily relies on human expertise and typically requires a deal of trial-and- error ~\cite{yuan2021tokens, touvron2021training, dosovitskiy2020image},.
@@ -106,22 +214,22 @@ This strategy is different from most one-shot NAS methods \cite{guo2020single, c
 
 it allows a large number of subnets in the super-net to be very well-trained, such that the performance of these subnets with weights inherited from the supernet are comparable to those retrained from scratch.
 
-To tackle the challenges, we construct a large search space covering the main changeable dimensions of trans- former, including embedding dimension, number of heads, query/key/value dimension, MLP ratio, and network depth.
+To tackle the challenges, we construct a large search space covering the main changeable dimensions of transformer, including embedding dimension, number of heads, query/key/value dimension, MLP ratio, and network depth.
 
 To address the efficiency issue, inspired by BigNAS \cite{yu2020bignas} and slimmable networks \cite{yu2020bignas, yu2018slimmable}
 
-It allows a large number of subnets in the super- net to be very well-trained, such that the performance of these subnets with weights inherited from the supernet are comparable to those retrained from scratch.
+It allows a large number of subnets in the supernet to be very well-trained, such that the performance of these subnets with weights inherited from the supernet are comparable to those retrained from scratch.
 
 We perform a evolutionary search with a model size constraint over the well-trained supernets to find promising transformers.
 
-Given a 2D image, we first uniformly split it into a se- quence of 2D patches. A transformer encoder consists of alternating blocks of multihead self-attention (MSA) and multi-layer perceptron (MLP) blocks. LayerNorm (LN) [2] is applied before ev- ery block, and residual connections after every block.
+Given a 2D image, we first uniformly split it into a se- quence of 2D patches. A transformer encoder consists of alternating blocks of multihead self-attention (MSA) and multi-layer perceptron (MLP) blocks. LayerNorm (LN) [2] is applied before every block, and residual connections after every block.
 
 weight entanglement:
 
 where W is the weight of the supernet, W is shared across all the architecture candidates
 Since it is impossible to enumerate all the architectures $\alpha in A$ for evaluation, prior works resort to random search [34, 4], evolution algorithms [43, 16] or reinforcement learning [40, 48] to find the most promising one.
 
-directly apply one-shot NAS for transformer search fol- lowing classical weight sharing strategy [16], using differ-ent weights for different blocks in each layer, because of the slow convergence and unsatisfactory performance. The reasons: 1. The reason might be that the independent training of transformer blocks results in the weights being updated by limited times. 2. The perfor- mances of subnets inheriting weights from the one-shot su- pernet, trained under classical weight sharing strategy, are far below their true performances of training from scratch. 
+directly apply one-shot NAS for transformer search following classical weight sharing strategy [16], using differ-ent weights for different blocks in each layer, because of the slow convergence and unsatisfactory performance. The reasons: 1. The reason might be that the independent training of transformer blocks results in the weights being updated by limited times. 2. The perfor- mances of subnets inheriting weights from the one-shot su- pernet, trained under classical weight sharing strategy, are far below their true performances of training from scratch. 
 
 The underlying reason is that homogeneous blocks are structurally compatible, such that the weights can share with each other. During implementation, for each layer, we need to store only the weights of the largest block among the n homogeneous candidates. The remaining smaller build- ing blocks can directly extract weights from the largest one.
 
@@ -131,20 +239,57 @@ Such partition allows the search algorithm to concentrate on finding models with
 
 For mutation, a candidate mutates its depth with probability Pd first. Then it mutates each block with a probability of Pm to produce a new architecture.
 
-\emph{Insights:} 1. For the weight entanglement, can we select several blocks to combine them as a more effective sub-supernets?  2. Use scrath result in better performance?
-\subsubsection{Few-shot Neural Architecture Search}
-1. Abstraction: 
 \emph{Insights:} 
-\section{Virtualization}
-\section{Computer System}
+1. For the weight entanglement, can we select several blocks to combine them as a more effective sub-supernets?  2. Use scrath result in better performance?
+\subsection{Hyper Dimension Computing}
+\subsubsection{Scalable Edge-Based Hyperdimensional Learning System with Brain-Like Neural Adaptation}
+abstract:
+Existing sophisticated algorithms such as deep learning are often overcomplex to run on less-powerful and unreliable embedded IoT devices. 
+
+\section{Learn: Virtualization}
+\section{Conference \& Talk}
+\section{Research Project}
+\subsection{Image Generation}
+I take all notes in the another document
+\subsection{SparseKernelSystemIntegration}
+\subsubsection{TODO LIST:}
+\begin{itemize}
+    \item 1. Run fast transformer to see if I can actually print some useful information
+    \item 2. find calling chain do we call these four GEMM functions 
+    \item 3. find the weights if the other part of code use
+    \item 4. Understand how the code to preserve cuda pointers for the weights \& design how to process these pointer to sparse format
+\end{itemize}
+\subsubsection{Insights:}
+\begin{itemize}
+    \item 1.
+\end{itemize}
+\subsubsection{Fast Transformer Coding}
+
+\subsection{Pre-Expedite: Use Hierarchical Structure Space for Improving the Performance of Accessing Small Files in Parallel File System}
+\subsubsection{TODO LIST:}
+\begin{itemize}
+    \item 1. Review the paper
+    \item 2. Re-organize the reference and read the paper
+    \item 3. Revise the paper
+\end{itemize}
+\subsubsection{Insights:}
+\subsubsection{DeltaFS: Exascale File Systems Scale Better Without Dedicated Servers}
+\subsubsection{DeltaFS: A Scalable No-Ground-Truth Filesystem For Massively-Parallel Computing}
+
 \subsection{MAEE - Multiple Applications Execution time Estimation}
+\subsubsection{TODO LIST:}
+\begin{itemize}
+    \item 1. Read the original paper and split it into profiling paper part
+    \item 2. Read the current benchmark papers and do some profiling experiments
+    \item 3. Read analysis paper and analyze the profiling results
+\end{itemize}
 \subsubsection{Insights:}
 \begin{itemize}
 	\item make a open-source dataset for the applications 
 	\item Design an accurate model for co-running them with the fact of time shifting. Esitimate the future running time.
 	\item Label different kind of applications
 	\item What is the realistic scenario for the scheduling problem?
-    \item For the related work, we know that there are several works before. They focused on 1. dynamic or static 2. optimize different features (Cache, Memory access, etc) to let the features be more accurate. 3. Add new features 4. Modify the model
+    \item For the related work, we know that there are several works before. They focused on 1. dynamic or static 2. optimize different features (Cache, Memory access, etc) to let the features be more accurate. 3. dd new features 4. Modify the model
     \item current datasets: 1. SPEC 2006 2. NPB applications with high memory intensity (e.g., soplex, libquantum, mcf ) and high cache sensitivity (e.g., ft, dealII, bzip2). TPC-C [68] and the Yahoo Cloud Serving Benchmark (YCSB) HiBench [10], Spark-perf [12] and SparkBench [11]. Shuhai benchmark
     \item What is the boundary of ML applied in the scheduling?
 \end{itemize}
@@ -155,55 +300,16 @@ What we want to do?:
     \item 2. When we co-execute these applications, the interface between them and relationship between the dimension supervised together.
     \item 3. Profiling results
 \end{itemize}
-
 \subsubsection{perf-tools}
 \begin{itemize}
-	\item perf
+    \item nsys
+	\item perf perf stat Run a command and gather performance counter statistics -I msecs -a, --all-cpus system-wide collection from all CPUs (default if no target is
+specified) -x SEP, --field-separator SEP print counts using a CSV-style output to make it easy to import directly into spreadsheets. Columns are separated by the string specified in SEP. -e a symbolic event name (use perf list to list all events) a raw PMU event (eventsel+umask) in the form of rNNN where NNN is a hexadecimal event descriptor. -p, --pid stat events on existing process id (comma separated list) perf list cpu/t1=v1[,t2=v2,t3 ...]/modifier                  [Raw hardware event descrip (see 'man perf-list' on how to encode it)
 	\item iostat
 	\item vmstat
 	\item ifstat
 \end{itemize}
 
-perf stat Run a command and gather performance counter statistics
-
--I msecs
-
--a, --all-cpus system-wide collection from all CPUs (default if no target is
-specified)
-
--x SEP, --field-separator SEP
-print counts using a CSV-style output to make it easy to import directly into spreadsheets. Columns are
-separated by the string specified in SEP.
-
-
--e a symbolic event name (use perf list to list all events) a raw PMU event (eventsel+umask) in the form of rNNN where NNN
-is a hexadecimal event descriptor.
-
--p, --pid stat events on existing process id (comma separated list)
-
-perf list
-
-cpu/t1=v1[,t2=v2,t3 ...]/modifier                  [Raw hardware event descrip
-(see 'man perf-list' on how to encode it)
-
-\subsubsection{Job placement using reinforcement learning in GPU virtualization environment}
-
-abstract: This study defines the resource utilization history of applications and proposes a reinforcement learning-based job placement technique, which uses it as an input. For resource utilization history learning, a deep reinforcement learning model (DQN) is used. 
-
-background: Many large cloud providers, such as Amazon EC2 [1], Nimbix [2], Microsoft Azure [3], and Alibaba [4] provide GPU services. When a user requests a GPU, these service providers (e.g., Kubernetes [5], Mesos [6]) grant exclusive access rights to the user instead of on- demand access. NVIDIA has provided a Multi-Process Service (MPS) [12] that executes multiple applications in one process by GPU sharing. However, this technology can be helpful for performance improvement if, and only if the kernel pattern of the application is known. HPC+ML, 
-
-related work: There are studies on the scheduling of co-execution tasks of applications in GPU resources: the co-placement method of applications is based on monitoring \cite{chang2017kubernetes,gu2018gaiagpu}, and a weight-based placement method using the GPU use profiling information of applications \cite{hong2017fairgv}.  
-
-motivation:  VGG16, RESNET-50, LAMMPS, QMCPACK. the HPC applications have various resource utilization patterns depend- ing on the execution stage. For the comparison, we used three deep-learning applications (CNN, vgg16, googlenet) of TensorFlow benchmark showing similar resource utilization characteristics and two HPC applications (LAMMPS and GROMACS) of NGC (Nvidia GPU Cloud). Scheduling that predicts the performance by using a conventional heuristic method through the usages of each resource is an NP-hard problem. 
-
-design: 1. describe multiple co-run applications 2. history of the application to be used for learning is defined 3. learning-based job placement method is proposed, which uses the defined resource utilization history as input.   1. Resource utilization history items of GPU application: 
-
-\begin{figure}[htbp]
-\caption{scheduling architecture}
-\centering
-\includegraphics[width=0.8\textwidth]{GPUAPP.png}
-\end{figure}
- 
 \subsubsection{The Application Slowdown Model: Quantifying and Controlling the Impact of Inter-Application Interference at Shared Caches and Main Memory}
 
 abstract: Unfortunately, prior works on estimating slowdowns either lead to inaccurate estimates, do not take into account shared caches, or rely on a priori application knowledge. ASM that accurately estimates application slowdowns due to interference at both the shared cache and main memory.  1. minimizes interference for the application at the main memory, 2.quantifies the interference the application receives at the shared cache Usage: slowdown-aware cache partitioning, slowdown-aware memory bandwidth parti- tioning and an example scheme to provide soft slowdown guarantees. (rate means speed of accessing rate)
@@ -257,7 +363,7 @@ leveraging ASM:
 
 8. 长时间的特征变化肯定是不一样的，需要用cach alone 时序数据而不是时刻数据去做预测. 文章是用每秒平均的cache关系去做一些分析
 
-\subsubsection{Sequence-to-sequence models for workload interference prediction on batch processing datacenters}
+\subsubsection{Sequence-to-sequence models for workload interference prediction on batch processing datacenters:}
 
 Since the average utilization is estimated to be below 50\%~\cite{barroso2007case, reiss2012heterogeneity} The principal problem when co-locating resource-sharing ap- plications is to ensure that competition will not ruin their QoS,
 
@@ -333,14 +439,22 @@ In \cite{berral2015aloja} Aloja-ML is presented as a framework for character- iz
 
 9. what is exactly usage of EOS or PCF?
 
-\subsection{Resource Management System}
+
+\subsection{Hybrid - Share: Resource Management System}
+\subsubsection{TODO List:}
+\begin{itemize}
+    \item 1. Read more scheduling papers
+    \item 2. think about combine my profiling algorithm with scheduling algorithm
+    \item 3. Deploy scheduling papers' open-source repo \& Write my own scheduling or simulator scheduling papers
+\end{itemize}
+\subsubsection{Insights:}
+\begin{itemize}
+    \item I found an interesting insights in my past paper. The layout affects the interference of two applications. Balance and Continous. Maybe I can keep doing the research of this part.
+    \item neglect the impact of for one tasks, may have some master-slaver mode. The resources consumption is not homogeneous.
+    \item biparitate match is not the best. It cannot solve the problem of several jobs running together. It can olny deploy two jobs togther. It's worth mentioning that HybridShare neglect to place the multiple jobs in the job queues to the same nodes.
+    \item Can we use the algorithm into the cloud computing
+\end{itemize}
 \subsubsection{Topology-Aware Scheduling System}
-\subsubsection{CCF Sys 2021}
-\paragraph{陈全 - 面向异构云平台的智能资源管理与调度}
-1. 边缘节点贡献资源性能下降，资源请求随附在变化而变化 - Nautilus
-2. 调度的冷启动的问题 - 都是用现有的模拟数据负载
-
-
 \subsubsection{Scheduling Scenario - Theory and Practice in Parallel Job Scheduling}
 \subsubsection{Differentiate Quality of Experience Scheduling for Deep Learning Inferences with Docker Containers in the Cloud}
 However, cloud providers fail to offer a QoE-based option to their clients. Clients have to balance the budget and quality of expesystem
@@ -364,22 +478,24 @@ Exp: why only the applications focus on the cpu usage? We can also draw a graph 
 1.Use a model to predict the QOS slowdown. (given resources to predict QOS) \\
 2.把QOS level和resource level 做一个绑定 这是一个好的想法 Given resources to predict the QOS
 3. Draw a graph to trace a job to take this a feature of the job
+\subsubsection{Job placement using reinforcement learning in GPU virtualization environment}
 
+abstract: This study defines the resource utilization history of applications and proposes a reinforcement learning-based job placement technique, which uses it as an input. For resource utilization history learning, a deep reinforcement learning model (DQN) is used. 
+
+background: Many large cloud providers, such as Amazon EC2 [1], Nimbix [2], Microsoft Azure [3], and Alibaba [4] provide GPU services. When a user requests a GPU, these service providers (e.g., Kubernetes [5], Mesos [6]) grant exclusive access rights to the user instead of on- demand access. NVIDIA has provided a Multi-Process Service (MPS) [12] that executes multiple applications in one process by GPU sharing. However, this technology can be helpful for performance improvement if, and only if the kernel pattern of the application is known. HPC+ML, 
+
+related work: There are studies on the scheduling of co-execution tasks of applications in GPU resources: the co-placement method of applications is based on monitoring \cite{chang2017kubernetes,gu2018gaiagpu}, and a weight-based placement method using the GPU use profiling information of applications \cite{hong2017fairgv}.  
+
+motivation:  VGG16, RESNET-50, LAMMPS, QMCPACK. the HPC applications have various resource utilization patterns depend- ing on the execution stage. For the comparison, we used three deep-learning applications (CNN, vgg16, googlenet) of TensorFlow benchmark showing similar resource utilization characteristics and two HPC applications (LAMMPS and GROMACS) of NGC (Nvidia GPU Cloud). Scheduling that predicts the performance by using a conventional heuristic method through the usages of each resource is an NP-hard problem. 
+
+design: 1. describe multiple co-run applications 2. history of the application to be used for learning is defined 3. learning-based job placement method is proposed, which uses the defined resource utilization history as input.   1. Resource utilization history items of GPU application: 
+
+\begin{figure}[htbp]
+\caption{scheduling architecture}
+\centering
+\includegraphics[width=0.8\textwidth]{GPUAPP.png}
+\end{figure}
 \subsubsection{Scalable system scheduling for HPC and big data}
-
-\subsubsection{Poisson Distribution}
-The Poisson Distribution use a $\lambda$ means the number of events happens between the average time 
-
-\subsubsection{Insights in Hybrid Share}
-
-I. found an interesting insights in my past paper. The layout affects the interference of two applications. Balance and Continous. Maybe I can keep doing the research of this part.
-
-2. neglect the impact of for one tasks, may have some master-slaver mode. The resources consumption is not homogeneous.
-
-3. biparitate match is not the best. It cannot solve the problem of several jobs running together. It can olny deploy two jobs togther. It's worth mentioning that HybridShare neglect to place the multiple jobs in the job queues to the same nodes.
-
-4. Can we use the algorithm into the cloud computing
-
 \subsubsection{异构计算系统调度理论与方法}
 背景:\\
 1. 使用的计算资源具有多种类型的计算能力 SIMD MIMD 向量 \\
@@ -412,146 +528,76 @@ CPU + 协处理器 GPU/MIC \\
 \centering
 \includegraphics[width=0.8\textwidth]{xiaoyongSchedule.jpg}
 \end{figure}
-
 \subsubsection{Sinan: ML-Based and QoS-Aware Resource Management for Cloud Microservices}
 
+\subsection{Super Resolution System}
+\subsubsection{Insights:}
+\begin{itemize}
+    \item Transformer-based Super Resolution Neural Architecture Search and Pruning (AutoFormer: Searching Transformers for Visual Recognition) + ()
+\end{itemize}
+\subsubsection{Deep Neural Network-based Enhancement for Image and Video Streaming Systems: A Survey and Future Directions}
+Visual Delivery System: The primary metrics of interest include essential attributes such as visual quality, frame rate, response time, rebuffering time, accuracy and quality of experience. Visual Quality: by both the bitrate and the amount of computational resources available to execute these models. So the other indexes are the same as the model's. Accuracy, Accuracy is reported as percentage for classification tasks or in the range 0-1 for the Intersection-over-Union (IoU) metric of semantic segmentation tasks;  Response Time Latency, or response time, is the primary performance indicator in latency-sensitive interactive applications, such as virtual reality ; Frame rate; Rebuffering, This phenomenon occurs when the playback buffer is drained due to the slow transmission of video segments. 
+\subsubsection{Video Super-Resolution Based on Deep Learning: A Comprehensive Survey}
+\subsubsection{SplitSR: An End-to-End Approach to Super-Resolution on Mobile Devices}
+\subsubsection{NTIRE 2021 Challenge on Video Super-Resolution}
+\subsubsection{Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network}
+\subsubsection{ImagePairs Building a realistic data set for super-resolution research by using a beam-splitter camera rig}
+\subsubsection{https://zhuanlan.zhihu.com/p/263008440 中文blog}
+总体:
+1)单幅图像分辨率放大 \\
+2)从多帧连续图像中重建超分辨率单帧图像；\\
+3)视频序列的超分辨率重建。 \\
 
-\subsection{Application Framework Optimization}
-\subsubsection{Code Optimization}
-\paragraph{Insights:}
-1. bayesian search in the code to find the openmp compiler's guider : (e.g., the nested number of parallel for)
-\subsubsection{Graph System}
-\paragraph{Krill: A Compiler and Runtime System for Concurrent Graph Processing}
-Notes:
+单幅图像放大主要利用对髙分辨率图像的先验知识和以混叠形式存在的高频信息进行复原。
 
-1. Ligra 
+评价指标：PSNR, 直接对比图像像素差值，它是基于对应像素点间的误差，并未考虑到人眼的视觉特性。因为人眼对空间频率较低的对比差异敏感度较高，对亮度对比差异的敏感度较色度高，人眼对一个区域的感知结果会受到其周围邻近区域的影响，因而经常出现评价结果与人的主观感觉不一致的情况。
 
+SSIM，作为结构相似性理论的实现，结构相似度指数从图像组成的角度将结构信息定义为独立于亮度、对比度的，反映场景中物体结构的属性，并将失真建模为亮度、对比度和结构三个不同因素的组合。用均值作为亮度的估计，标准差作为对比度的估计，协方差作为结构相似程度的度量。
+
+FID， FID（Frechet Inception Distance）， IS，即Inception Score，用过Inception， v3模型度量图片分数，可用来算单张图片的分值，越高越好。
+
+1. 频域方法：图像序列被模型化为同一幅场景经整体平移后欠采样的结果，欠采样过程在频域表现为频谱混叠。设F为多帧观测图像傅里叶变换的逐行排列，A：为H标高分辨率图像傅里叶变换的逐行排列，则观测模型可表示为:Y=AX
+2. 空域方法
+a. 非均匀插值方法
+b. 迭代反投影方法
+3. 凸集投影方法POCS
+4. 随机正则化方法-最大后验概率（MAP)方法
+
+\subsection{ML Huge System}
+\subsubsection{TODO LIST:}
+1.
+\subsubsection{Insights:}
+\subsubsection{scaling distributed machine learning with parameter server}
+\subsubsection{}
+
+\subsection{Survey of Machine Learning for Computer Architecture and Systems}
+\subsubsection{A Survey of Machine Learning for Computer Architecture and Systems}
+let ML transform the way that computer architecture and systems are designed. 
+
+
+\subsection{NAS \& Meta learning in Computer System}
+\subsubsection{Insigts:}
+\subsubsection{Rethinking and Improving Relative Position Encoding for Vision Transformer}
+\subsubsection{Searching the Search Space of Vision Transformer}
+\subsubsection{MiniViT: Compressing Vision Transformers with Weight Multiplexing}
+\subsubsection{NAS-SE: Designing An Efficient In-Situ One-Shot Neural Architecture Search Engine for Large-Scale Deployment}
+
+\subsection{Graph System}
+\subsubsection{Insigts:}
+\subsubsection{Krill: A Compiler and Runtime System for Concurrent Graph Processing}
+1.Ligra 
 2.the time of loading graph nto memory consumes a lot. 
 
-\subsubsection{Ray}
-\paragraph{1. Ownership: A Distributed Futures System for Fine-Grained Tasks~\cite{wang2021ownership}}
-NSDI 2021; 
+\subsection{Ray}
+\subsubsection{Insigts:}
+\subsubsection{Ownership: A Distributed Futures System for Fine-Grained Tasks~\cite{wang2021ownership}}
+NSDI 2021; The original proposal uses synchronous calls that copy return values back to the caller. It suggest that , we need to pass the results to the master nodes after finish calculating. And in the end, the results will be passed to another nodes. There are too many such processes in the distribution computation. Thus, this process is wasting communication. Several recent systems [4, 34, 37, 45] have extended RPC so that, in addition to distributed communica- tion, the system may also manage data movement and paral- lelism on behalf of the application. Papers:
+4. PyTorch - Remote Reference Protocol. \\
+5. Ray v1.0. https://github.com/ray-project/ray/ releases/tag/ray-1.0.0.\\
+34. Philipp Moritz, Robert Nishihara, Stephanie Wang, Alexey Tumanov, Richard Liaw, Eric Liang, Melih Eli- bol, Zongheng Yang, William Paul, Michael I. Jordan, and Ion Stoica. Ray: A distributed framework for emerg- ing AI applications. In 13th USENIX Symposium on Operating Systems Design and Implementation (OSDI 18), Carlsbad, CA, 2018. USENIX Association.\\
+37. Derek G. Murray, Malte Schwarzkopf, Christopher Smowton, Steven Smith, Anil Madhavapeddy, and Steven Hand. CIEL: A universal execution engine for distributed data-flow computing. In Proceedings of the 8th USENIX Conference on Networked Systems Design and Implementation, NSDI’11, pages 113–126, Berke- ley, CA, USA, 2011. USENIX Association.\\
+45. Matthew Rocklin. Dask: Parallel computation with blocked algorithms and task scheduling. In Kathryn Huff and James Bergstra, editors, Proceedings of the 14th Python in Science Conference, pages 130 – 136, 2015.\\
 
-\begin{itemize}
-	
-	\item Introduction
-	The original proposal uses synchronous calls that copy return values back to the caller. 
-	
-	\com{It suggest that , we need to pass the results to the master nodes after finish calculating. And in the end, the results will be passed to another nodes. There are too many such processes in the distribution computation. Thus, this process is wasting communication.} 
-	
-	Several recent systems [4, 34, 37, 45] have extended RPC so that, in addition to distributed communica- tion, the system may also manage data movement and paral- lelism on behalf of the application.
-	
-	4. PyTorch - Remote Reference Protocol. \\
-	5. Ray v1.0. https://github.com/ray-project/ray/ releases/tag/ray-1.0.0.\\
-	34. Philipp Moritz, Robert Nishihara, Stephanie Wang, Alexey Tumanov, Richard Liaw, Eric Liang, Melih Eli- bol, Zongheng Yang, William Paul, Michael I. Jordan, and Ion Stoica. Ray: A distributed framework for emerg- ing AI applications. In 13th USENIX Symposium on Operating Systems Design and Implementation (OSDI 18), Carlsbad, CA, 2018. USENIX Association.\\
-	37. Derek G. Murray, Malte Schwarzkopf, Christopher Smowton, Steven Smith, Anil Madhavapeddy, and Steven Hand. CIEL: A universal execution engine for distributed data-flow computing. In Proceedings of the 8th USENIX Conference on Networked Systems Design and Implementation, NSDI’11, pages 113–126, Berke- ley, CA, USA, 2011. USENIX Association.\\
-	45. Matthew Rocklin. Dask: Parallel computation with blocked algorithms and task scheduling. In Kathryn Huff and James Bergstra, editors, Proceedings of the 14th Python in Science Conference, pages 130 – 136, 2015.\\
-
-\end{itemize}
-\subsubsection{TurboTransformer}
-\paragraph{Jiazhi: NSCC-GZ Group Meeting 2021 - 09 - 30}
-Notes:
-
-1. $>$ 16 Threads Accelere not clearly 
-
-2. 32 64 performance degradation 
-
-3.thead only have a little time fully utilized CPU
-
-4. tall-skinny
-
-TSM2X: High-Performance Tall-and-Skinny Matrix-Matrix Multiplication on GPUs
-Cody Rivera, Jieyang Chen, Nan Xiong, Shuaiwen Leon Song, Dingwen Tao
-
- 
-\subsubsection{Parameter Server}
-\paragraph{1. ParaX: Boosting Deep Learning for Big Data Analytics on Many-Core CPUs}
-\begin{itemize}
-	\item abstract: Insights: DL do not understand how to use CPU core. making many-core CPUs inef- ficient in DL computation.  effectively allevi- ating bandwidth contention and CPU starvation.\\ sufficiently overlaps the access-intensive layers with the compute- intensive ones to avoid contention, and proposes a NUMA-aware gradient server mechanism for training which leverages shared memory to substantially reduce the overhead of per-iteration parameter synchronization. 
-	\item FBLearner; Figure 1 shows that it is inefficient to assign only one instance to a many-core CPU which has much lower bandwidth. This is because one-instance-per-CPU implicitly imposes the per-layer barriers on the executions of the many cores which are jointly processing the batch.
-	\item author find an interesting problem: some operations are bound in the memory, some operations are bound in compute.  
-\end{itemize}
-\paragraph{2. A Unified Architecture for Accelerating Distributed DNN Training in Heterogeneous GPU/CPU Clusters}
-\begin{itemize}
-	\item Summation Service can be accelerated by AVX instructions and can be efficiently run on CPUs, while DNN model-related optimizer algorithms are run on GPUs for com- putation acceleration.
-\end{itemize}
-
-\section{Computer Architecture}
-\subsection{Roofline Model}
-
-\subsection{Coursera: Computer Architecture, Computer Architecture: A Quantitative Approach}
-David Wentzlaff\\
-Associate Professor\\
-Department of Electrical Engineering\\
-Princeton University\\
-
-\subsubsection{Chapter 1: fundamentals of quantitative design and analysis}
-
-\subsubsection{Chapter 6 Review of Memory Hierarchy}
-1. intorduction: 
-
-\subsubsection{Review of Memory Hierarchy}
-
-1. Temporal locality, spital locality. cache miss = latency and bandwidth of the memroy
-2. in-order/out-of-order execution
-3. Registers: CMOS, Cache: On-chip CMOS SRAM, Main memory: CMOS DRAM, Disk
-
-What happend if we have infinite storage level. More level is better?
-
-4. number of cycles during which the processor is stalled waiting for a memroy acess - \emph{memory stall cycles} \emph{memory stall cycles} = $ICx\frac{Memroy accesses}{Instruction}xmiss\ rate x miss\ penalty$. So memroy stall cycles => cache's miss. disk stall cycles?
-
-5. using a single number for miss penalty is a simplification.
-
-6. measure cache design - miss rate. It dependedd in architecture (x86 or RISC V) becuae number of memory acess per instructions variy from x86 to RISC V.
-
-7.where to place the blocks? Fully associative, Directed Map, set associative - (first we let the block be set of k, and the block b only can go to b mod k, but it can go anywhere inside the set b mod k. If there are n blocks in a set, the cache placement is called \emph{n-way set associative}.
-
-8. how do a blocks found if it's in the cache? each block have a address tag, every block will check whether the tag match the processors' tag block in parallel. valid bit to show this cache blocks actually store something (cahce line may be null). the tag is used to check the blocks in the set. 
-
-9. approximation fro LRU: use n bits (n equal to the ways in a set). When a set is access the bit corresponding to the way, we turn on (transfer to 1). If all is 1 we close all of them and set the bit we just accessed as 1. And we eject the cache line with full 0.
-
-10. processors traditionally wait for reads to complete but need not wait for writes. read at the same time check tag. (if hit, we have read it! miss we have no harm!). but write cannot do this. For write, we have write through (flush to mem immeditately) and write back. write allocate / no write allocate (will not move to cache when write miss)
-
-11. 
-
-Q:
-
-1. memroy stall cycles => cache's miss. disk stall cycles?
-2. Example, loads and stores, these total $50\%$ of the instructions. Why 1 + 0.5?
-3. What does block offset means? Does the block address means the position of the data storage? And tag in the blocks address only have 0 or 1? or the tag means the offset of the blocks in the cache set?
-4. 
-
-\subsubsection{Readings: Pipelining: Basic and Intermediate Concepts}
-
-processor cycle: moving an instructions on step down the pipeline. Determined by the slowest stage.
-
-
-
-\subsubsection{Data Hazards}
-\begin{itemize}
-	\item \textbf{Schedule} explicitly avoids scheduling instructions that would create data hazards
-	\item \textbf{Stall} freezes earlier stages until preceding instruction has finish producing data value
-	\item \textbf{bypass} you can add extra hardware to your data path, and the extra hardware is going to send the value as soon as it gets created, so you may not have to wait for it to get to the end of the pipeline. So if the data value gets made early, you can just forward that to an instruction which needs it, but that adds extra hardware and complexity to your design. 
-	\item \textbf{Speculate} So, if you have a data hazard, you could assume it's not a problem or you could assume that, you know, everything's gonna be okay. I'll just use the encrypt value for a little bit of time and we'll assume that the value, the old value is equal to the new value or you do data speculations, other ways to do this. And if you make a mistake you catch it by the time you get to the end. And you basically have to re-execute the instruction with the correct value then.  
-\end{itemize}
-
-\section{Mathematics}
-\subsection{Probability Theory}
-\subsubsection{PDF,CDF,PMF}
-1. 如果X是连续型随机变量，那么可以定义它的概率密度函数（probability density function, PDF)，有时简称为密度函数。 我们用PDF在某一区间上的积分来刻画随机变量落在这个区间中的概率，即 $\int^b_a f_X(x) dx$ 
-
-2. 如果X是离散型随机变量，那么可以定义X的概率质量函数（probability mass function, PMF）$P_X(x) = pr(X == x)$
-
-3. 而不管X是什么类型（连续/离散/其他）的随机变量，都可以定义它的累积分布函数（cumulative distribution function ,CDF）$F_X(x) = Pr(X <= x)$，有时简称为分布函数。 \\CDF 对于连续的可以表示为 $\int_{\infty}^x f_X(t) dt$ 那么CDF就是PDF的积分，PDF就是CDF的导数。 \\而CDF对于离散的就是小于等于X的离散值的概率之和。 另外CDF的单调递增（不减）性质可以由它的定义和概率的性质推出
-
-\section{Writing \& Publish}
-\subsection{Journal}
-\subsubsection{Cover Letter}
-I am enclosing herewith a manuscript entitled “Pre-Expedite: Use Hierarchical Structure Space for Improving the Performance of Accessing Small Files in Parallel File System” submitted to “Journal of Computer Science and Technology” for possible evaluation. 
-
-第二段阐述自己的论文的好处
-
-With the submission of this manuscript, I would like to undertake that the above-mentioned manuscript has not been published elsewhere, accepted for publication elsewhere or under editorial review for publication elsewhere; and that my Institute’s (Sun Yat-sen University) representative is fully aware of this submission.
 
 \bibliographystyle{unsrt}
 \bibliography{reference}
